@@ -88,6 +88,7 @@
     async fn login(login_data: web::Json<LoginRequest>, db: web::Data<Database>) -> impl Responder {
         // Validation logic
         println!("Received login request");
+        println!("Received login request");
 
         // Check if the user with the given email exists
         let collection: Collection = db.collection("users");
