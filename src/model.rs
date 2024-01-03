@@ -1,5 +1,5 @@
-use serde::{Deserialize, Serialize};
 use mongodb::bson::oid::ObjectId;
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct UserData {
@@ -8,5 +8,4 @@ pub struct UserData {
     pub last_name: String,
     pub password: String,
     pub confirm_password: String,
-    
 }

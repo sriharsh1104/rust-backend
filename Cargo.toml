@@ -1,5 +1,5 @@
 [package]
-name = "game_backend"
+name = "rust_backend"
 version = "0.1.0"
 edition = "2021"
 
@@ -16,3 +16,4 @@ jsonwebtoken = "7.0.2"
 dotenv = "0.15.0"
 chrono = "0.4"
 regex = "1"
+futures-util = "0.3"

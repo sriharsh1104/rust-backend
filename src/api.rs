@@ -6,6 +6,7 @@
     use crate::patent_data::PatentDataForUser;
     use mongodb::options::FindOneAndUpdateOptions;
     use mongodb::options::ReturnDocument;
+    use crate::search_data::search_patents;
 
     use jsonwebtoken::{encode,decode, Header, EncodingKey, Algorithm,Validation};
     use chrono::Utc;
@@ -59,8 +60,6 @@
             .map(|data| data.claims)
     }
 
-
-
     async fn register(user_data: web::Json<UserData>, db: web::Data<Database>) -> impl Responder {
         // Validation logic
         println!("Received registration request");
@@ -87,7 +86,6 @@
     }
     async fn login(login_data: web::Json<LoginRequest>, db: web::Data<Database>) -> impl Responder {
         // Validation logic
-        println!("Received login request");
         println!("Received login request");
 
         // Check if the user with the given email exists
@@ -186,7 +184,8 @@
             web::resource("/insert_patent_data")
                 .route(web::post().to(insert_patent_data)),
         )
-        .service(web::resource("/verify_token/{token}").route(web::get().to(verify_token)));
+        .service(web::resource("/verify_token/{token}").route(web::get().to(verify_token)))
+        .route("/search", web::get().to(search_patents));
         
         
     }
