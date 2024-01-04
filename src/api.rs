@@ -185,15 +185,41 @@ async fn insert_patent_data(
     }
 }
 async fn make_user_admin(email: web::Path<String>, db: web::Data<Database>) -> impl Responder {
-    // Retrieve the user by email and update their role to admin
+    // Retrieve the user by email
     let collection: Collection = db.collection("users");
 
     // Convert email to String
     let email_string: String = email.into_inner();
 
-    let filter = doc! { "email": email_string };
-    let update = doc! { "$set": { "role": "admin" } };
+    let filter = doc! { "email": email_string.clone() };
+    let user = match collection.find_one(filter.clone(), None).await {
+        Ok(Some(user)) => user,
+        Ok(None) => {
+            return HttpResponse::NotFound().json(ApiResponse {
+                message: "User not found".to_string(),
+                token: None,
+            });
+        }
+        Err(_) => {
+            return HttpResponse::InternalServerError().json(ApiResponse {
+                message: "Error retrieving user".to_string(),
+                token: None,
+            });
+        }
+    };
 
+    // Check if the user already has an admin role
+    if let Some(role) = user.get("role").and_then(|role| role.as_str()) {
+        if role == "admin" {
+            return HttpResponse::Ok().json(ApiResponse {
+                message: "User already has admin access".to_string(),
+                token: None,
+            });
+        }
+    }
+
+    // Update user's role to admin
+    let update = doc! { "$set": { "role": "admin" } };
     match collection.update_one(filter, update, None).await {
         Ok(_) => HttpResponse::Ok().json(ApiResponse {
             message: "User successfully granted admin access".to_string(),
