@@ -12,11 +12,14 @@ pub async fn search_patents(
 ) -> Result<HttpResponse> {
     // Extract the search query from the request parameters
     let query = req.query_string();
+    println!("Received search request with query: {}", query);
     println!("Received search request");
     // Perform a simple search using the query in the patent_data collection
     let collection: Collection = db.collection("patent_data");
-    let filter = doc! { "field_to_search": { "$regex": query, "$options": "i" } };
+    let filter = doc! { "paragraph": { "$regex": query, "$options": "i" } };
     let cursor = collection.find(filter, None).await.unwrap();
+    let collection_count = collection.count_documents(doc! {}, None).await.unwrap();
+    println!("Number of documents in the collection: {}", collection_count);
 
     // Collect the results into a Vec
     let results: Result<Vec<_>, Box<dyn Error>> = cursor
